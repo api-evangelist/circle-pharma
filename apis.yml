@@ -1,18 +1,73 @@
 aid: circle-pharma
 name: Circle Pharma
-description: 'Circle Pharma is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Circle Pharma is a clinical-stage biopharmaceutical company in South San Francisco, California,
+  developing cell-permeable, orally bioavailable macrocycle therapies for cancer. Founded in 2013 by
+  Matthew P. Jacobson and Scott Lokey out of work on predicting synthetic macrocycle cell permeability,
+  the company applies its proprietary MXMO structure-based design platform to protein-protein
+  interactions that conventional small molecules cannot reach. Its pipeline targets cyclins, the
+  regulators of the cell cycle that drive many cancers: lead program CID-078, a first-in-class oral
+  cyclin A/B RxL inhibitor, is in Phase 1 for advanced solid tumors, followed by a preclinical cyclin
+  D1 RxL inhibitor and undisclosed cyclin programs partnered with Boehringer Ingelheim. Circle Pharma
+  closed a $90M Series D led by The Column Group in 2024 and has an agreement with Eli Lilly to use
+  Lilly TuneLab to strengthen the AI/ML side of the MXMO platform. Circle Pharma runs no developer
+  program and publishes no product API; the only machine-readable surface it exposes is the
+  anonymously readable WordPress REST content API behind circlepharma.com.
+image: https://circlepharma.com/wp-content/uploads/2024/01/Asset-2@2x.png
 url: https://raw.githubusercontent.com/api-evangelist/circle-pharma/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enriched
 specificationVersion: '0.20'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
 - Company
-apis: []
+- biotechnology
+- pharmaceuticals
+- oncology
+- drug-discovery
+- macrocycles
+- clinical-trials
+- life-sciences
+- content-api
+apis:
+- aid: circle-pharma:circle-pharma-content-api
+  name: Circle Pharma Content API
+  description: >-
+    The anonymously readable WordPress REST API behind circlepharma.com. It exposes Circle Pharma
+    press releases, publications and in-the-news items (posts), site pages, the media library, the
+    leadership and board roster (team + member_type taxonomy), the events calendar (all_events +
+    event_type taxonomy) and cross-content search. This is not a developer product Circle Pharma
+    markets; it is the site's own discovery surface, published at /wp-json/ and verified to return
+    data without credentials. The OpenAPI in this repo is derived from that published route index.
+  humanURL: https://developer.wordpress.org/rest-api/
+  baseURL: https://circlepharma.com/wp-json
+  tags:
+  - content
+  - press-releases
+  - events
+  - wordpress
+  properties:
+  - type: OpenAPI
+    url: openapi/circle-pharma-content-openapi.yml
+  - type: Overlay
+    url: overlays/circle-pharma-content-overlay.yaml
+  - type: Authentication
+    url: authentication/circle-pharma-authentication.yml
+  - type: ErrorCatalog
+    url: errors/circle-pharma-problem-types.yml
+  - type: Conventions
+    url: conventions/circle-pharma-conventions.yml
+  - type: DataModel
+    url: data-model/circle-pharma-data-model.yml
+  x-contract-provenance: >-
+    Derived by the API Evangelist enrichment pipeline from the WordPress REST route index the site
+    publishes at https://circlepharma.com/wp-json/ and verified against live anonymous responses on
+    2026-08-01. Circle Pharma publishes no developer documentation, no API reference and no support
+    channel for this surface, so no Documentation/APIReference/GettingStarted pointers are emitted —
+    the humanURL above is the upstream WordPress REST handbook that describes the wp/v2 contract.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +75,57 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
+  url: https://circlepharma.com/
+- type: About
+  url: https://circlepharma.com/about-us
+- type: Blog
+  url: https://circlepharma.com/whats-new
+- type: BlogRSS
+  url: https://circlepharma.com/feed/
+- type: PressReleases
+  url: https://circlepharma.com/press-releases
+- type: Publications
+  url: https://circlepharma.com/publications
+- type: Events
+  url: https://circlepharma.com/upcoming-events
+- type: Careers
+  url: https://circlepharma.com/work-with-us
+- type: Contact
+  url: https://circlepharma.com/contact-us
+- type: Investors
+  url: https://circlepharma.com/investors
+- type: Support
+  url: https://circlepharma.com/contact-us
+- type: TermsOfService
+  url: https://circlepharma.com/terms-of-use
+- type: PrivacyPolicy
+  url: https://circlepharma.com/privacy-policy
+- type: LinkedIn
+  url: https://www.linkedin.com/company/circle-pharma-inc-/
+- type: SecondaryMarket
   url: https://forgeglobal.com/circle-pharma_stock/
+- type: Authentication
+  url: authentication/circle-pharma-authentication.yml
+- type: Conventions
+  url: conventions/circle-pharma-conventions.yml
+- type: Conformance
+  url: conformance/circle-pharma-conformance.yml
+- type: ErrorCatalog
+  url: errors/circle-pharma-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/circle-pharma-lifecycle.yml
+- type: DataModel
+  url: data-model/circle-pharma-data-model.yml
+- type: WellKnown
+  url: well-known/circle-pharma-well-known.yml
+- type: DomainSecurity
+  url: security/circle-pharma-domain-security.yml
+- type: LLMsTxt
+  url: llms/circle-pharma-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+x-enrichment:
+  date: '2026-08-01'
+  status: enriched
+  artifacts_added: 15
+  pass: local-v1

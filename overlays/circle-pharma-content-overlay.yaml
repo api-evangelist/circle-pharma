@@ -1,0 +1,74 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Circle Pharma Content API
+  version: 1.0.0
+  x-generated: '2026-08-01'
+  x-method: generated
+  x-source: >-
+    Enhancements derived by the API Evangelist enrichment pipeline from live probes of
+    https://circlepharma.com/wp-json/ on 2026-08-01. Applies to the derived OpenAPI; the underlying
+    route index is the provider's, the annotations below are ours.
+extends: openapi/circle-pharma-content-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/provider/circle-pharma
+    x-provider-type: biopharmaceutical
+    x-developer-program: false
+    x-contract-provenance: derived-from-wordpress-route-index
+    x-anonymous-read: true
+- target: $.info
+  update:
+    x-artifacts:
+      conventions: conventions/circle-pharma-conventions.yml
+      errors: errors/circle-pharma-problem-types.yml
+      data_model: data-model/circle-pharma-data-model.yml
+      lifecycle: lifecycle/circle-pharma-lifecycle.yml
+      authentication: authentication/circle-pharma-authentication.yml
+      conformance: conformance/circle-pharma-conformance.yml
+      well_known: well-known/circle-pharma-well-known.yml
+- target: $.info
+  update:
+    x-rate-limits:
+      documented: false
+      note: >-
+        No RateLimit headers are returned. Edge caching (Cloudflare + WP Engine,
+        cache-control max-age=600) is the effective throttle; robots.txt advertises Crawl-delay 10.
+        Be a good citizen: cache for at least 10 minutes and use If-Modified-Since.
+- target: $.paths['/wp/v2/posts'].get
+  update:
+    x-record-count-observed: 107
+    x-observed-on: '2026-08-01'
+    x-usage: >-
+      Filter by the `categories` parameter to isolate the company's three news streams — press
+      releases (33), publications (32), in the news (34). Combine with `after` for incremental sync
+      and `_fields=id,date,title,link` to keep payloads small.
+- target: $.paths['/wp/v2/team'].get
+  update:
+    x-record-count-observed: 61
+    x-observed-on: '2026-08-01'
+    x-usage: >-
+      The people roster. `member_type` term ids segment it: Our Team (22), Board of Directors (39),
+      Senior Management (54), Scientific Advisory Board (40). Use `_embed` to inline headshots.
+- target: $.paths['/wp/v2/all_events'].get
+  update:
+    x-record-count-observed: 5
+    x-observed-on: '2026-08-01'
+    x-usage: Conference and investor appearances; `event_type` terms are year buckets plus "Upcoming Events".
+- target: $.paths['/wp/v2/pages'].get
+  update:
+    x-record-count-observed: 20
+    x-observed-on: '2026-08-01'
+    x-usage: >-
+      Pipeline, science and clinical-trial narrative lives here as `content.rendered` HTML — the
+      machine-readable route to the company's program descriptions.
+- target: $.paths['/wp/v2/comments'].get
+  update:
+    x-quality-warning: >-
+      Anonymously readable but dominated by inbound link spam in the 2026-08-01 sample. Not a
+      Circle Pharma communication channel; do not treat as company content.
+- target: $.components.schemas.Error
+  update:
+    x-format: wordpress-rest
+    x-rfc9457: false
+    x-catalog: errors/circle-pharma-problem-types.yml

@@ -1,0 +1,49 @@
+generated: '2026-08-01'
+method: derived
+source:
+- https://circlepharma.com/wp-json/
+- openapi/circle-pharma-content-openapi.yml
+- live probes 2026-08-01
+note: >-
+  Circle Pharma publishes no API versioning policy, deprecation policy, SLA, status page or changelog
+  — it runs no developer program. The lifecycle recorded here is that of the underlying WordPress REST
+  namespace as deployed on circlepharma.com. Absences below are recorded facts, not omissions.
+versioning:
+  scheme: namespace-in-path
+  current: wp/v2
+  namespaces_published: 18
+  namespaces_source: https://circlepharma.com/wp-json/ (`namespaces` array)
+  policy_url: null
+  docs: https://developer.wordpress.org/rest-api/
+  note: >-
+    Version changes would arrive as a new namespace segment (wp/v3). The site currently exposes only
+    wp/v2 of the core namespace, alongside plugin namespaces (elementor, yoast, cky, wordfence,
+    facetwp, wpe) that are administrative rather than public content routes.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  evidence: No Sunset or Deprecation response headers observed on any probed route.
+deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+status_page:
+  url: null
+  evidence: >-
+    No status.circlepharma.com and no status page linked from circlepharma.com. The site is fronted by
+    Cloudflare and hosted on WP Engine, whose own status pages are third-party infrastructure, not a
+    Circle Pharma commitment, so no StatusPage pointer is emitted.
+changelog:
+  api_changelog_url: null
+  company_news: https://circlepharma.com/whats-new
+  press_releases: https://circlepharma.com/press-releases
+  feed: https://circlepharma.com/feed/
+  note: >-
+    The company publishes dated corporate news (press releases, publications, in-the-news) but no API
+    changelog. The news stream is itself readable through this API via listPosts + listCategories.
+support:
+  channel: https://circlepharma.com/contact-us
+  email: info@circlepharma.com
+  phone: 650-825-4099
+  address: 169 Harbor Way, South San Francisco, CA 94080

@@ -1,0 +1,30 @@
+generated: '2026-08-01'
+method: generated
+source: openapi/circle-pharma-content-openapi.yml
+note: >-
+  Packaged agent skills for the Circle Pharma Content API. Every step is grounded in an operationId
+  that exists in openapi/circle-pharma-content-openapi.yml, which is itself derived from the route
+  index the site publishes at https://circlepharma.com/wp-json/. Circle Pharma publishes no skills of
+  its own and no AGENTS.md (probed 2026-08-01).
+skills:
+- file: circle-pharma-track-news.md
+  name: Track Circle Pharma news and publications
+  description: >-
+    Incrementally pull press releases, publications and in-the-news items by category, with
+    modified_after sync, pagination limits and image resolution.
+  api: openapi/circle-pharma-content-openapi.yml
+  operations: [listCategories, listPosts, getPost, listMedia]
+- file: circle-pharma-people-roster.md
+  name: Build the Circle Pharma people roster
+  description: >-
+    Assemble leadership, board of directors, senior management and the scientific advisory board from
+    the team content type and the member_type taxonomy, with headshots via _embed.
+  api: openapi/circle-pharma-content-openapi.yml
+  operations: [listMemberTypes, listTeamMembers, getTeamMember, getMediaItem]
+- file: circle-pharma-company-brief.md
+  name: Assemble a Circle Pharma company brief
+  description: >-
+    Pull the pipeline, science, clinical-trial and investor narrative plus events and recent news into
+    one brief, with citation and staleness rules for clinical content.
+  api: openapi/circle-pharma-content-openapi.yml
+  operations: [getRouteIndex, listTypes, listPages, getPage, listEvents, listEventTypes, listPosts, search]

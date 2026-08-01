@@ -1,0 +1,82 @@
+# Circle Pharma
+
+> Clinical-stage biopharmaceutical company in South San Francisco, California, developing cell-permeable, orally bioavailable macrocycle therapies for cancer using its proprietary MXMO structure-based design platform. Lead program CID-078, a first-in-class oral cyclin A/B RxL inhibitor, is in Phase 1 for advanced solid tumors. Founded 2013.
+
+Generated: 2026-08-01
+Method: generated (from apis.yml + repo artifacts; /llms.txt returns 404 on circlepharma.com)
+Source: https://circlepharma.com/
+
+Circle Pharma runs no developer program and markets no API. The one machine-readable surface the
+company exposes is the anonymously readable WordPress REST content API behind circlepharma.com,
+published at https://circlepharma.com/wp-json/. Everything in the "APIs" and "Specs" sections below
+describes that surface. The OpenAPI in this repo was derived by API Evangelist from the site's own
+published route index — it is not a Circle Pharma specification.
+
+## Company
+
+- [Home](https://circlepharma.com/): Company overview and MXMO platform positioning
+- [About Us](https://circlepharma.com/about-us): Founding (2013), leadership, board, scientific advisory board
+- [Our Science](https://circlepharma.com/our-science): Macrocycle chemistry and the MXMO discovery platform
+- [Our Pipeline](https://circlepharma.com/our-pipeline): CID-078 (cyclin A/B RxL, Phase 1), preclinical cyclin D1 RxL, undisclosed cyclin programs partnered with Boehringer Ingelheim
+- [Clinical Trials](https://circlepharma.com/clinical-trials): Trial information and Expanded Access Policy
+- [Investors](https://circlepharma.com/investors): Investor information ($90M Series D led by The Column Group, 2024)
+- [Work With Us](https://circlepharma.com/work-with-us): Careers
+- [Contact Us](https://circlepharma.com/contact-us): 169 Harbor Way, South San Francisco, CA 94080 — info@circlepharma.com — 650-825-4099
+
+## News
+
+- [What's New](https://circlepharma.com/whats-new): Combined news stream
+- [Press Releases](https://circlepharma.com/press-releases): 52 items as of 2026-08-01
+- [Publications](https://circlepharma.com/publications): 46 items
+- [In the News](https://circlepharma.com/in-the-news): 8 items
+- [Upcoming Events](https://circlepharma.com/upcoming-events): Conference and investor appearances
+- [RSS feed](https://circlepharma.com/feed/): RSS 2.0
+
+## APIs
+
+- [Circle Pharma Content API](https://circlepharma.com/wp-json/): WordPress REST API (wp/v2), anonymous read, JSON. Base URL https://circlepharma.com/wp-json
+- [Route index](https://circlepharma.com/wp-json/): 349 registered routes across 18 namespaces; the discovery document this profile is derived from
+- [WordPress REST API handbook](https://developer.wordpress.org/rest-api/): Upstream documentation for the wp/v2 contract
+
+Public read collections (all verified HTTP 200 without credentials on 2026-08-01):
+
+- `GET /wp-json/wp/v2/posts` — press releases, publications, in-the-news (107 records)
+- `GET /wp-json/wp/v2/pages` — pipeline, science, clinical-trial and corporate pages (20)
+- `GET /wp-json/wp/v2/team` — leadership, board, SAB and staff (61)
+- `GET /wp-json/wp/v2/member_type` — team segmentation taxonomy (4 terms)
+- `GET /wp-json/wp/v2/all_events` — events calendar (5)
+- `GET /wp-json/wp/v2/event_type` — event taxonomy (2 terms)
+- `GET /wp-json/wp/v2/categories` — post categories (4 terms)
+- `GET /wp-json/wp/v2/media` — images and documents (323)
+- `GET /wp-json/wp/v2/search?search=` — cross-content search
+- `GET /wp-json/wp/v2/types`, `/taxonomies`, `/statuses` — schema discovery
+
+Not available anonymously: `/wp/v2/users` and `/wp/v2/settings` return 401.
+
+## Specs
+
+- [OpenAPI 3.1 (derived)](openapi/circle-pharma-content-openapi.yml): 26 read operations over the content surface
+- [Overlay](overlays/circle-pharma-content-overlay.yaml): API Evangelist annotations, record counts and usage notes
+- [Data model](data-model/circle-pharma-data-model.yml): Entity graph — posts, pages, team, events, taxonomies, media and their relationships
+- [Conventions](conventions/circle-pharma-conventions.yml): Pagination, sparse fieldsets, `_embed`, caching, error envelope
+- [Error catalog](errors/circle-pharma-problem-types.yml): Live-probed WordPress error codes (not RFC 9457)
+- [Authentication](authentication/circle-pharma-authentication.yml): None for read; Application Passwords (HTTP Basic) for the out-of-scope write routes
+- [Lifecycle](lifecycle/circle-pharma-lifecycle.yml): Namespace versioning; no deprecation policy, SLA, status page or API changelog
+- [Conformance](conformance/circle-pharma-conformance.yml): Standards observed and not observed
+- [Domain security](security/circle-pharma-domain-security.yml): TLS 1.3; no HSTS, no DNSSEC, no CAA; SPF present, DMARC p=none
+- [Well-known](well-known/circle-pharma-well-known.yml): Every RFC 8615 path probed — all 404
+
+## Agent notes
+
+- The public contract is read-only. There is no write, no idempotency key, no webhook, no event stream
+  and no MCP server. Do not assume any of these exist.
+- Use `_fields` to trim responses and `_embed` to inline featured media and taxonomy terms.
+- Paginate with `page`/`per_page` (max 100) and read `X-WP-Total` / `X-WP-TotalPages`; paging past the
+  last page returns 400 `rest_post_invalid_page_number`.
+- `title`, `content` and `excerpt` are objects with a `rendered` HTML string, not plain strings.
+- Errors are `{"code","message","data":{"status"}}` — WordPress-native, not `application/problem+json`.
+- No rate-limit headers are published. Cache for at least 10 minutes (the origin's own `max-age`) and
+  honor the `Crawl-delay: 10` in robots.txt.
+- `/wp/v2/comments` is anonymously readable but is largely inbound spam; it is not Circle Pharma content.
+- For clinical or medical information, the authoritative source is the company's own pages and
+  ClinicalTrials.gov, not this content API.

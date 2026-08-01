@@ -1,0 +1,3226 @@
+openapi: 3.1.0
+info:
+  title: Circle Pharma Content API (WordPress REST API)
+  version: wp/v2
+  description: Anonymously readable content API for circlepharma.com, derived from the WordPress REST
+    API route index the site publishes at https://circlepharma.com/wp-json/. It exposes Circle Pharma
+    press releases, publications, in-the-news items and pages (posts/pages), the media library, the leadership/board
+    roster (team + member_type), the events calendar (all_events + event_type), and site search. Circle
+    Pharma does not publish a developer program or a hand-authored specification; this document is a faithful
+    derivation of the routes, parameters and defaults the site itself advertises, restricted to the read
+    operations verified to return HTTP 200 without credentials. Write operations exist on the same routes
+    but are authenticated administrative endpoints, not a public API offering, and are deliberately not
+    modelled here.
+  contact:
+    name: Circle Pharma
+    email: info@circlepharma.com
+    url: https://circlepharma.com/contact-us
+  x-derived-from: https://circlepharma.com/wp-json/
+  x-derived-on: '2026-08-01'
+  x-api-evangelist-note: Derived by the API Evangelist enrichment pipeline from the provider-published
+    WordPress REST route index; not authored or endorsed by Circle Pharma.
+servers:
+- url: https://circlepharma.com/wp-json
+  description: Production
+tags:
+- name: Posts
+  description: Press releases, publications and in-the-news items
+- name: Pages
+  description: Static site pages (pipeline, science, clinical trials)
+- name: Media
+  description: Media library items
+- name: Categories
+  description: Post categories
+- name: Tags
+  description: Post tags
+- name: Team
+  description: Leadership, board and team member records
+- name: Events
+  description: Upcoming and past events
+- name: Comments
+  description: Comments on posts
+- name: Search
+  description: Cross-content search
+- name: Discovery
+  description: Route index, content types, taxonomies and statuses
+paths:
+  /:
+    get:
+      operationId: getRouteIndex
+      tags:
+      - Discovery
+      summary: Get the REST API route index
+      description: Returns the site name, description, namespaces, authentication schemes and every registered
+        route.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Route index
+          content:
+            application/json:
+              schema:
+                type: object
+  /wp/v2:
+    get:
+      operationId: getCoreNamespaceIndex
+      tags:
+      - Discovery
+      summary: Get the wp/v2 namespace index
+      security:
+      - {}
+      responses:
+        '200':
+          description: Namespace index
+          content:
+            application/json:
+              schema:
+                type: object
+  /wp/v2/posts:
+    get:
+      operationId: listPosts
+      tags:
+      - Posts
+      summary: List Post records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: author
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to posts assigned to specific authors.
+      - name: author_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes posts assigned to specific authors.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: categories
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items with specific terms assigned in the categories taxonomy.
+      - name: categories_exclude
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items except those with specific terms assigned in the categories
+          taxonomy.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - standard
+            - aside
+            - chat
+            - gallery
+            - link
+            - image
+            - quote
+            - status
+            - video
+            - audio
+        description: Limit result set to items assigned one or more given formats.
+      - name: ignore_sticky
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+        description: Whether to ignore sticky posts or not.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          default: date
+        description: Sort collection by post attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+            enum:
+            - post_title
+            - post_content
+            - post_excerpt
+        description: Array of column names to be searched.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: publish
+          items:
+            type: string
+            enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+            - auto-draft
+            - inherit
+            - request-pending
+            - request-confirmed
+            - request-failed
+            - request-completed
+            - acf-disabled
+            - any
+        description: Limit result set to posts assigned one or more statuses.
+      - name: sticky
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Limit result set to items that are sticky.
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items with specific terms assigned in the tags taxonomy.
+      - name: tags_exclude
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items except those with specific terms assigned in the tags taxonomy.
+      - name: tax_relation
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+        description: Limit result set based on relationship between multiple taxonomies.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Post records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/posts/{id}:
+    get:
+      operationId: getPost
+      tags:
+      - Posts
+      summary: Get a single Post record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the post.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: excerpt_length
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Override the default excerpt length.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Post record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/pages:
+    get:
+      operationId: listPages
+      tags:
+      - Pages
+      summary: List Page records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: author
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to posts assigned to specific authors.
+      - name: author_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes posts assigned to specific authors.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: menu_order
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Limit result set to posts with a specific menu_order value.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          - menu_order
+          default: date
+        description: Sort collection by post attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to items with particular parent IDs.
+      - name: parent_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to all items except those of a particular parent ID.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+            enum:
+            - post_title
+            - post_content
+            - post_excerpt
+        description: Array of column names to be searched.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: publish
+          items:
+            type: string
+            enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+            - auto-draft
+            - inherit
+            - request-pending
+            - request-confirmed
+            - request-failed
+            - request-completed
+            - acf-disabled
+            - any
+        description: Limit result set to posts assigned one or more statuses.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Page records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Page'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/pages/{id}:
+    get:
+      operationId: getPage
+      tags:
+      - Pages
+      summary: Get a single Page record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the page.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: excerpt_length
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Override the default excerpt length.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Page record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/media:
+    get:
+      operationId: listMedia
+      tags:
+      - Media
+      summary: List MediaItem records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: author
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to posts assigned to specific authors.
+      - name: author_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes posts assigned to specific authors.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: media_type
+        in: query
+        required: false
+        schema:
+          type: array
+          default: null
+          items:
+            type: string
+            enum:
+            - image
+            - video
+            - text
+            - application
+            - audio
+        description: Limit result set to attachments of a particular media type or media types.
+      - name: mime_type
+        in: query
+        required: false
+        schema:
+          type: array
+          default: null
+          items:
+            type: string
+        description: Limit result set to attachments of a particular MIME type or MIME types.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          default: date
+        description: Sort collection by post attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to items with particular parent IDs.
+      - name: parent_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to all items except those of a particular parent ID.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+            enum:
+            - post_title
+            - post_content
+            - post_excerpt
+        description: Array of column names to be searched.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: inherit
+          items:
+            type: string
+            enum:
+            - inherit
+            - private
+            - trash
+        description: Limit result set to posts assigned one or more statuses.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of MediaItem records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaItem'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/media/{id}:
+    get:
+      operationId: getMediaItem
+      tags:
+      - Media
+      summary: Get a single MediaItem record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the mediaitem.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The MediaItem record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaItem'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/categories:
+    get:
+      operationId: listCategories
+      tags:
+      - Categories
+      summary: List Category records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: hide_empty
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to hide terms not assigned to any posts.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - include
+          - name
+          - slug
+          - include_slugs
+          - term_group
+          - description
+          - count
+          default: name
+        description: Sort collection by term attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Limit result set to terms assigned to a specific parent.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: post
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: null
+        description: Limit result set to terms assigned to a specific post.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to terms with one or more specific slugs.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Category records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/categories/{id}:
+    get:
+      operationId: getCategory
+      tags:
+      - Categories
+      summary: Get a single Category record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the category.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Category record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/tags:
+    get:
+      operationId: listTags
+      tags:
+      - Tags
+      summary: List Tag records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: hide_empty
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to hide terms not assigned to any posts.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - include
+          - name
+          - slug
+          - include_slugs
+          - term_group
+          - description
+          - count
+          default: name
+        description: Sort collection by term attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: post
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: null
+        description: Limit result set to terms assigned to a specific post.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to terms with one or more specific slugs.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Tag records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/tags/{id}:
+    get:
+      operationId: getTag
+      tags:
+      - Tags
+      summary: Get a single Tag record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the tag.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Tag record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/team:
+    get:
+      operationId: listTeamMembers
+      tags:
+      - Team
+      summary: List TeamMember records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: member_type
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items with specific terms assigned in the member_type taxonomy.
+      - name: member_type_exclude
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items except those with specific terms assigned in the member_type
+          taxonomy.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          default: date
+        description: Sort collection by post attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+            enum:
+            - post_title
+            - post_content
+            - post_excerpt
+        description: Array of column names to be searched.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: publish
+          items:
+            type: string
+            enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+            - auto-draft
+            - inherit
+            - request-pending
+            - request-confirmed
+            - request-failed
+            - request-completed
+            - acf-disabled
+            - any
+        description: Limit result set to posts assigned one or more statuses.
+      - name: tax_relation
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+        description: Limit result set based on relationship between multiple taxonomies.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of TeamMember records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamMember'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/team/{id}:
+    get:
+      operationId: getTeamMember
+      tags:
+      - Team
+      summary: Get a single TeamMember record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the teammember.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The TeamMember record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamMember'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/all_events:
+    get:
+      operationId: listEvents
+      tags:
+      - Events
+      summary: List Event records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published after a given ISO8601 compliant date.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts published before a given ISO8601 compliant date.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: event_type
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items with specific terms assigned in the event_type taxonomy.
+      - name: event_type_exclude
+        in: query
+        required: false
+        schema:
+          type:
+          - object
+          - array
+        description: Limit result set to items except those with specific terms assigned in the event_type
+          taxonomy.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: modified_after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified after a given ISO8601 compliant date.
+      - name: modified_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to posts modified before a given ISO8601 compliant date.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - author
+          - date
+          - id
+          - include
+          - modified
+          - parent
+          - relevance
+          - slug
+          - include_slugs
+          - title
+          default: date
+        description: Sort collection by post attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: search_columns
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: string
+            enum:
+            - post_title
+            - post_content
+            - post_excerpt
+        description: Array of column names to be searched.
+      - name: search_semantics
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - exact
+        description: How to interpret the search input.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to posts with one or more specific slugs.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          default: publish
+          items:
+            type: string
+            enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+            - auto-draft
+            - inherit
+            - request-pending
+            - request-confirmed
+            - request-failed
+            - request-completed
+            - acf-disabled
+            - any
+        description: Limit result set to posts assigned one or more statuses.
+      - name: tax_relation
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+        description: Limit result set based on relationship between multiple taxonomies.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Event records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/all_events/{id}:
+    get:
+      operationId: getEvent
+      tags:
+      - Events
+      summary: Get a single Event record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the event.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Event record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/member_type:
+    get:
+      operationId: listMemberTypes
+      tags:
+      - Team
+      summary: List MemberType records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: hide_empty
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to hide terms not assigned to any posts.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - include
+          - name
+          - slug
+          - include_slugs
+          - term_group
+          - description
+          - count
+          default: name
+        description: Sort collection by term attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Limit result set to terms assigned to a specific parent.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: post
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: null
+        description: Limit result set to terms assigned to a specific post.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to terms with one or more specific slugs.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of MemberType records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberType'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/member_type/{id}:
+    get:
+      operationId: getMemberType
+      tags:
+      - Team
+      summary: Get a single MemberType record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the membertype.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The MemberType record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberType'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/event_type:
+    get:
+      operationId: listEventTypes
+      tags:
+      - Events
+      summary: List EventType records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: hide_empty
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: Whether to hide terms not assigned to any posts.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: asc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - include
+          - name
+          - slug
+          - include_slugs
+          - term_group
+          - description
+          - count
+          default: name
+        description: Sort collection by term attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: post
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: null
+        description: Limit result set to terms assigned to a specific post.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: slug
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Limit result set to terms with one or more specific slugs.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of EventType records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/event_type/{id}:
+    get:
+      operationId: getEventType
+      tags:
+      - Events
+      summary: Get a single EventType record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the eventtype.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: The EventType record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/comments:
+    get:
+      operationId: listComments
+      tags:
+      - Comments
+      summary: List Comment records
+      description: Collection is paginated with `page` and `per_page`; the response carries `X-WP-Total`
+        and `X-WP-TotalPages` headers and RFC 8288 `Link` rel="next"/"prev".
+      parameters:
+      - name: after
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to comments published after a given ISO8601 compliant date.
+      - name: author
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+        description: Limit result set to comments assigned to specific user IDs. Requires authorization.
+      - name: author_email
+        in: query
+        required: false
+        schema:
+          type: string
+          format: email
+          default: null
+        description: Limit result set to that from a specific author email. Requires authorization.
+      - name: author_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+        description: Ensure result set excludes comments assigned to specific user IDs. Requires authorization.
+      - name: before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+        description: Limit response to comments published before a given ISO8601 compliant date.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Offset the result set by a specific number of items.
+      - name: order
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+          default: desc
+        description: Order sort attribute ascending or descending.
+      - name: orderby
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - date
+          - date_gmt
+          - id
+          - include
+          - post
+          - parent
+          - type
+          default: date_gmt
+        description: Sort collection by comment attribute.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: parent
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to comments of specific parent IDs.
+      - name: parent_exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific parent IDs.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the post if it is password protected.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: post
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to comments assigned to specific post IDs.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          default: approve
+        description: Limit result set to comments assigned a specific status. Requires authorization.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: comment
+        description: Limit result set to comments assigned a specific type. Requires authorization.
+      security:
+      - {}
+      responses:
+        '200':
+          description: A page of Comment records
+          headers:
+            X-WP-Total:
+              description: Total number of records
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages
+              schema:
+                type: integer
+            Link:
+              description: RFC 8288 pagination links (rel="next", rel="prev")
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/comments/{id}:
+    get:
+      operationId: getComment
+      tags:
+      - Comments
+      summary: Get a single Comment record
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Unique identifier for the comment.
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: password
+        in: query
+        required: false
+        schema:
+          type: string
+        description: The password for the parent post of the comment (if the post is password protected).
+      security:
+      - {}
+      responses:
+        '200':
+          description: The Comment record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          $ref: '#/components/responses/Error'
+  /wp/v2/types:
+    get:
+      operationId: listTypes
+      tags:
+      - Discovery
+      summary: List registered content types
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+  /wp/v2/taxonomies:
+    get:
+      operationId: listTaxonomies
+      tags:
+      - Discovery
+      summary: List registered taxonomies
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to taxonomies associated with a specific post type.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+  /wp/v2/statuses:
+    get:
+      operationId: listStatuses
+      tags:
+      - Discovery
+      summary: List registered post statuses
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+  /wp/v2/search:
+    get:
+      operationId: search
+      tags:
+      - Search
+      summary: Search across public content
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Ensure result set excludes specific IDs.
+      - name: include
+        in: query
+        required: false
+        schema:
+          type: array
+          default: []
+          items:
+            type: integer
+        description: Limit result set to specific IDs.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+        description: Current page of the collection.
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 1
+          maximum: 100
+        description: Maximum number of items to be returned in result set.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to those matching a string.
+      - name: subtype
+        in: query
+        required: false
+        schema:
+          type: array
+          default: any
+          items:
+            type: string
+            enum:
+            - post
+            - page
+            - e-floating-buttons
+            - elementor_library
+            - team
+            - all_events
+            - category
+            - post_tag
+            - member_type
+            - event_type
+            - any
+        description: Limit results to items of one or more object subtypes.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - post
+          - term
+          - post-format
+          default: post
+        description: Limit results to items of an object type.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
+        '400':
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: WordPress Application Passwords (RFC 7617 Basic over TLS). Required only for write
+        and administrative routes, which are out of scope for this document — every operation modelled
+        here is anonymous.
+  responses:
+    Error:
+      description: WordPress REST error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: rest_post_invalid_id
+            message: Invalid post ID.
+            data:
+              status: 404
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the record.
+        date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        date_gmt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        guid:
+          type: object
+          properties:
+            rendered:
+              type: string
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          type: object
+          properties:
+            rendered:
+              type: string
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        excerpt:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        featured_media:
+          type: integer
+        _links:
+          type: object
+          description: HAL-style link relations.
+        categories:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+        author:
+          type: integer
+        sticky:
+          type: boolean
+        format:
+          type: string
+    Page:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the record.
+        date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        date_gmt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        guid:
+          type: object
+          properties:
+            rendered:
+              type: string
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          type: object
+          properties:
+            rendered:
+              type: string
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        excerpt:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        featured_media:
+          type: integer
+        _links:
+          type: object
+          description: HAL-style link relations.
+        parent:
+          type: integer
+        menu_order:
+          type: integer
+        author:
+          type: integer
+    MediaItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the record.
+        date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        date_gmt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        guid:
+          type: object
+          properties:
+            rendered:
+              type: string
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          type: object
+          properties:
+            rendered:
+              type: string
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        excerpt:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        featured_media:
+          type: integer
+        _links:
+          type: object
+          description: HAL-style link relations.
+        alt_text:
+          type: string
+        caption:
+          type: object
+          properties:
+            rendered:
+              type: string
+        media_type:
+          type: string
+        mime_type:
+          type: string
+        source_url:
+          type: string
+          format: uri
+        media_details:
+          type: object
+    TeamMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the record.
+        date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        date_gmt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        guid:
+          type: object
+          properties:
+            rendered:
+              type: string
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          type: object
+          properties:
+            rendered:
+              type: string
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        excerpt:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        featured_media:
+          type: integer
+        _links:
+          type: object
+          description: HAL-style link relations.
+        member_type:
+          type: array
+          items:
+            type: integer
+          description: member_type taxonomy term ids (e.g. leadership, board of directors).
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the record.
+        date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        date_gmt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        guid:
+          type: object
+          properties:
+            rendered:
+              type: string
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          type: object
+          properties:
+            rendered:
+              type: string
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        excerpt:
+          type: object
+          properties:
+            rendered:
+              type: string
+            protected:
+              type: boolean
+        featured_media:
+          type: integer
+        _links:
+          type: object
+          description: HAL-style link relations.
+        event_type:
+          type: array
+          items:
+            type: integer
+          description: event_type taxonomy term ids (e.g. the event year).
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        description:
+          type: string
+        link:
+          type: string
+          format: uri
+        name:
+          type: string
+        slug:
+          type: string
+        taxonomy:
+          type: string
+        parent:
+          type: integer
+        _links:
+          type: object
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        description:
+          type: string
+        link:
+          type: string
+          format: uri
+        name:
+          type: string
+        slug:
+          type: string
+        taxonomy:
+          type: string
+        parent:
+          type: integer
+        _links:
+          type: object
+    MemberType:
+      type: object
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        description:
+          type: string
+        link:
+          type: string
+          format: uri
+        name:
+          type: string
+        slug:
+          type: string
+        taxonomy:
+          type: string
+        parent:
+          type: integer
+        _links:
+          type: object
+    EventType:
+      type: object
+      properties:
+        id:
+          type: integer
+        count:
+          type: integer
+        description:
+          type: string
+        link:
+          type: string
+          format: uri
+        name:
+          type: string
+        slug:
+          type: string
+        taxonomy:
+          type: string
+        parent:
+          type: integer
+        _links:
+          type: object
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+        post:
+          type: integer
+        parent:
+          type: integer
+        author:
+          type: integer
+        author_name:
+          type: string
+        author_url:
+          type: string
+        date:
+          type: string
+          format: date-time
+        content:
+          type: object
+          properties:
+            rendered:
+              type: string
+        link:
+          type: string
+          format: uri
+        status:
+          type: string
+        type:
+          type: string
+        _links:
+          type: object
+    SearchResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        type:
+          type: string
+        subtype:
+          type: string
+        _links:
+          type: object
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable WordPress error code.
+        message:
+          type: string
+          description: Human-readable error message.
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+              description: HTTP status code.
+            params:
+              type: object
+            details:
+              type: object
+security:
+- {}

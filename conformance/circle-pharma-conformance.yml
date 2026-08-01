@@ -1,0 +1,92 @@
+generated: '2026-08-01'
+method: derived
+source:
+- openapi/circle-pharma-content-openapi.yml
+- conventions/circle-pharma-conventions.yml
+- security/circle-pharma-domain-security.yml
+- live probes of https://circlepharma.com on 2026-08-01
+note: >-
+  Circle Pharma is a clinical-stage biopharmaceutical company, not an API provider. It publishes no
+  compliance program, no trust center and no certifications on its public site, and it makes no
+  standards claims about the WordPress REST surface behind circlepharma.com. Everything below is
+  derived from what was observed; `conforms: false` here means "not observed", not "audited and
+  failed". No `Compliance` pointer is emitted in apis.yml because no compliance program is published.
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: >-
+    openapi/circle-pharma-content-openapi.yml is a valid OpenAPI 3.1.0 document — but it was derived
+    by API Evangelist from the site's WordPress route index, not published by Circle Pharma.
+  published_by_provider: false
+- id: rest
+  conforms: true
+  evidence: Resource-oriented JSON over HTTPS with GET semantics and HAL-style _links per record.
+- id: rfc8288-web-linking
+  conforms: true
+  evidence: Collection responses return a Link header with rel="next"/"prev" (observed on /wp/v2/posts).
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors use the WordPress envelope {code,message,data.status} with content-type application/json,
+    not application/problem+json. See errors/circle-pharma-problem-types.yml.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 (probed 2026-08-01).
+- id: rfc8615-well-known
+  conforms: false
+  evidence: No /.well-known/ document is served; api-catalog, agent-card.json and agent.json all 404.
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme; no /.well-known/oauth-authorization-server.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404.
+- id: rfc7617-basic-auth
+  conforms: true
+  evidence: >-
+    WordPress Application Passwords use HTTP Basic over TLS for the authenticated (out-of-scope)
+    routes; /wp/v2/users/{id}/application-passwords is registered in the route index.
+- id: rfc9331-ratelimit-headers
+  conforms: false
+  evidence: No RateLimit or X-RateLimit-* headers observed.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation headers observed; no deprecation policy published.
+- id: idempotency-key
+  conforms: false
+  evidence: No idempotency key accepted; public contract is read-only.
+- id: cursor-pagination
+  conforms: false
+  evidence: Pagination is page-number based (page/per_page) with X-WP-Total/X-WP-TotalPages.
+- id: json-api
+  conforms: false
+  evidence: Response shape is WordPress-native, not JSON:API.
+- id: asyncapi
+  conforms: false
+  evidence: No event, streaming or webhook surface is published. RSS at /feed/ is the only push-ish surface.
+- id: hsts
+  conforms: false
+  evidence: 'security/circle-pharma-domain-security.yml: hsts false on circlepharma.com.'
+- id: dnssec
+  conforms: false
+  evidence: 'security/circle-pharma-domain-security.yml: dnssec false for circlepharma.com.'
+- id: caa
+  conforms: false
+  evidence: No CAA records published for circlepharma.com.
+- id: dmarc
+  conforms: true
+  evidence: DMARC record present with policy p=none (monitor only, not enforcing).
+- id: spf
+  conforms: true
+  evidence: SPF record present for circlepharma.com.
+- id: tls-1.3
+  conforms: true
+  evidence: TLSv1.3 negotiated on circlepharma.com.
+compliance_program:
+  published: false
+  trust_center: null
+  certifications: []
+  evidence: >-
+    No trust center, SOC 2 / ISO 27001 / HIPAA / GDPR compliance page, or security page was found on
+    circlepharma.com (probe-security-programs.py: vdp=none trust=none, 2026-08-01). The site publishes
+    a privacy policy and terms of use only.

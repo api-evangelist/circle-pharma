@@ -1,0 +1,183 @@
+generated: '2026-08-01'
+method: derived
+source:
+- openapi/circle-pharma-content-openapi.yml
+- https://circlepharma.com/wp-json/wp/v2/types
+- https://circlepharma.com/wp-json/wp/v2/taxonomies
+- live collection probes on 2026-08-01 (record counts from X-WP-Total)
+note: >-
+  Entity graph of the Circle Pharma Content API, derived from the content types and taxonomies the
+  site registers and from the id-reference fields present in live records. Record counts are the
+  X-WP-Total headers observed on 2026-08-01 and will drift. Only the publicly readable content
+  entities are modelled; WordPress editorial internals (templates, blocks, fonts, widgets, plugins)
+  are registered on the same namespace but are administrative, not content.
+identifiers:
+  scheme: integer surrogate key (`id`) per collection, unique within its content type
+  human_key: '`slug`, unique within a content type; the public URL is in `link`'
+  no_prefixes: >-
+    Ids carry no type prefix, so an id is only meaningful together with its collection — an important
+    difference from prefixed-id APIs.
+entities:
+- name: Post
+  collection: /wp/v2/posts
+  operations: [listPosts, getPost]
+  records_observed: 107
+  description: >-
+    The corporate news stream — press releases, publications and in-the-news items. The company's
+    three public news sections are categories on this one collection, not separate content types.
+  key_fields: [id, slug, date, modified, title.rendered, content.rendered, excerpt.rendered, link, categories, tags, featured_media, author]
+- name: Page
+  collection: /wp/v2/pages
+  operations: [listPages, getPage]
+  records_observed: 20
+  description: >-
+    Static site pages — About Us, Our Science, Our Pipeline, Clinical Trials, Investors, Work With Us,
+    Contact Us, Privacy Policy, Terms of Use. Hierarchical via `parent`.
+  key_fields: [id, slug, title.rendered, content.rendered, link, parent, menu_order, featured_media]
+- name: TeamMember
+  collection: /wp/v2/team
+  operations: [listTeamMembers, getTeamMember]
+  records_observed: 61
+  description: >-
+    People records for leadership, the board, the scientific advisory board and staff. The richest
+    company-specific entity on this surface.
+  key_fields: [id, slug, title.rendered, content.rendered, link, member_type, featured_media]
+- name: MemberType
+  collection: /wp/v2/member_type
+  operations: [listMemberTypes, getMemberType]
+  taxonomy_of: TeamMember
+  hierarchical: true
+  records_observed: 4
+  terms_observed:
+  - {id: 22, name: Our Team, slug: the-team, count: 52}
+  - {id: 39, name: Board of Directors, slug: about-board-of-directiors, count: 7}
+  - {id: 54, name: Senior Management, slug: senior-management, count: 4}
+  - {id: 40, name: Scientific Advisory Board, slug: about-scientific-advisory-board, count: 3}
+- name: Event
+  collection: /wp/v2/all_events
+  operations: [listEvents, getEvent]
+  records_observed: 5
+  description: Conference and investor events the company presents at (e.g. AACR Annual Meeting).
+  key_fields: [id, slug, title.rendered, content.rendered, link, event_type, featured_media]
+- name: EventType
+  collection: /wp/v2/event_type
+  operations: [listEventTypes, getEventType]
+  taxonomy_of: Event
+  hierarchical: false
+  records_observed: 2
+  terms_observed:
+  - {id: 30, name: Upcoming Events, slug: upcoming-events, count: 0}
+  - {id: 31, name: '2024', slug: '2024', count: 0}
+- name: Category
+  collection: /wp/v2/categories
+  operations: [listCategories, getCategory]
+  taxonomy_of: Post
+  hierarchical: true
+  records_observed: 4
+  terms_observed:
+  - {id: 33, name: Press Releases, slug: press-releases, count: 52}
+  - {id: 32, name: Publications, slug: publications, count: 46}
+  - {id: 34, name: In the News, slug: in-the-news, count: 8}
+  - {id: 1, name: Uncategorized, slug: uncategorized, count: 1}
+- name: Tag
+  collection: /wp/v2/tags
+  operations: [listTags, getTag]
+  taxonomy_of: Post
+  hierarchical: false
+  records_observed: 0
+  note: Registered but unused — the collection returns an empty array.
+- name: MediaItem
+  collection: /wp/v2/media
+  operations: [listMedia, getMediaItem]
+  records_observed: 323
+  description: Images and documents; `source_url` is the direct file, `media_details.sizes` the renditions.
+  key_fields: [id, slug, alt_text, caption.rendered, media_type, mime_type, source_url, media_details, post]
+- name: Comment
+  collection: /wp/v2/comments
+  operations: [listComments, getComment]
+  records_observed: 165
+  description: >-
+    Comments attached to posts. Almost entirely inbound spam in the sample observed; low analytical
+    value, recorded for completeness because the collection is anonymously readable.
+  key_fields: [id, post, parent, author_name, author_url, date, content.rendered, status]
+- name: SearchResult
+  collection: /wp/v2/search
+  operations: [search]
+  description: >-
+    Lightweight projection across public content types — {id, title, url, type, subtype} — the cheapest
+    way to resolve a term to a record without paging a collection.
+relationships:
+- from: Post
+  to: Category
+  kind: has_many
+  via: categories
+  inverse: Category has_many Post (filter listPosts?categories=<id>)
+- from: Post
+  to: Tag
+  kind: has_many
+  via: tags
+- from: Post
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+  note: 0 means no featured image.
+- from: Post
+  to: User
+  kind: belongs_to
+  via: author
+  note: >-
+    The users collection is 401 anonymously (rest_user_cannot_view), so the author id cannot be
+    resolved without credentials — a dangling reference on the public surface.
+- from: Page
+  to: Page
+  kind: belongs_to
+  via: parent
+  note: Self-referential hierarchy; parent 0 means top level.
+- from: Page
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+- from: TeamMember
+  to: MemberType
+  kind: has_many
+  via: member_type
+  inverse: MemberType has_many TeamMember (filter listTeamMembers?member_type=<id>)
+- from: TeamMember
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+  note: The headshot.
+- from: Event
+  to: EventType
+  kind: has_many
+  via: event_type
+- from: Event
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+- from: MemberType
+  to: MemberType
+  kind: belongs_to
+  via: parent
+  note: Hierarchical taxonomy; all observed terms are top level (parent 0).
+- from: Category
+  to: Category
+  kind: belongs_to
+  via: parent
+- from: Comment
+  to: Post
+  kind: belongs_to
+  via: post
+- from: MediaItem
+  to: Post
+  kind: belongs_to
+  via: post
+  note: The record the file was uploaded to; 0 when unattached.
+traversal:
+  embed: >-
+    Add `_embed` to any request to inline featured media and taxonomy terms under `_embedded`,
+    resolving every relationship above in a single round trip instead of N follow-up calls.
+  links: >-
+    Each record's `_links` object carries self / collection / about / author / replies /
+    wp:featuredmedia / wp:term relations with absolute URLs (curie namespace https://api.w.org/{rel}).
+render: null

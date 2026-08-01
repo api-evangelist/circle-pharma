@@ -1,0 +1,56 @@
+generated: '2026-08-01'
+method: probed
+source: live GET probes of https://circlepharma.com/.well-known/*
+host: https://circlepharma.com
+note: >-
+  circlepharma.com is the only host in this repo (it is both the website and the base host of the
+  WordPress REST content API at /wp-json). Every RFC 8615 discovery path below was probed anonymously
+  on 2026-08-01 and none is served. The site answers /.well-known/security.txt with the origin's own
+  plain 404 and the remaining paths with the WordPress 404 page (HTML, status 404) — no false-positive
+  200 catch-all, so these are genuine absences.
+documents:
+- path: /.well-known/security.txt
+  status: 404
+  content_type: text/html
+- path: /.well-known/openid-configuration
+  status: 404
+  content_type: text/html
+- path: /.well-known/oauth-authorization-server
+  status: 404
+  content_type: text/html
+- path: /.well-known/api-catalog
+  status: 404
+  content_type: text/html
+- path: /.well-known/ai-plugin.json
+  status: 404
+  content_type: text/html
+- path: /.well-known/agent-card.json
+  status: 404
+  content_type: text/html
+- path: /.well-known/agent.json
+  status: 404
+  content_type: text/html
+other_probes:
+- path: /robots.txt
+  status: 200
+  note: Yoast-generated; allows all user agents with Crawl-delay 10 and advertises the sitemap index.
+- path: /sitemap_index.xml
+  status: 200
+- path: /feed/
+  status: 200
+  note: WordPress RSS 2.0 feed of press releases and news.
+- path: /wp-json/
+  status: 200
+  note: >-
+    WordPress REST API route index — the only machine-readable API discovery document this host
+    serves. 349 routes across 18 namespaces; drives openapi/circle-pharma-content-openapi.yml.
+- path: /llms.txt
+  status: 404
+- path: /openapi.json
+  status: 404
+- path: /swagger.json
+  status: 404
+- path: /api-docs
+  status: 404
+- path: /graphql
+  status: 404
