@@ -24,6 +24,16 @@ created: '2026-08-01'
 modified: '2026-08-01'
 tags:
 - Company
+- Biotechnology
+- Pharmaceuticals
+- Oncology
+- Drug Discovery
+- Macrocycles
+- Clinical Trials
+- Life Sciences
+- content-api
+tags_raw:
+- Company
 - biotechnology
 - pharmaceuticals
 - oncology
@@ -45,6 +55,11 @@ apis:
   humanURL: https://developer.wordpress.org/rest-api/
   baseURL: https://circlepharma.com/wp-json
   tags:
+  - Content
+  - Press Releases
+  - Event
+  - WordPress
+  tags_raw:
   - content
   - press-releases
   - events
