@@ -13,6 +13,18 @@ description: >-
   Lilly TuneLab to strengthen the AI/ML side of the MXMO platform. Circle Pharma runs no developer
   program and publishes no product API; the only machine-readable surface it exposes is the
   anonymously readable WordPress REST content API behind circlepharma.com.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://circlepharma.com/wp-content/uploads/2024/01/Asset-2@2x.png
 url: https://raw.githubusercontent.com/api-evangelist/circle-pharma/refs/heads/main/apis.yml
 x-type: company
