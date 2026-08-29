@@ -1,0 +1,28 @@
+{
+  "provider": "circle-pharma",
+  "sources": [
+    "circle-pharma-content-openapi.yml"
+  ],
+  "outputs": [
+    "circle-pharma-categories-api-openapi.yml",
+    "circle-pharma-comments-api-openapi.yml",
+    "circle-pharma-discovery-api-openapi.yml",
+    "circle-pharma-events-api-openapi.yml",
+    "circle-pharma-media-api-openapi.yml",
+    "circle-pharma-pages-api-openapi.yml",
+    "circle-pharma-posts-api-openapi.yml",
+    "circle-pharma-search-api-openapi.yml",
+    "circle-pharma-tags-api-openapi.yml",
+    "circle-pharma-team-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/circle-pharma-content-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "circle-pharma-content-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: written (+10 apis, 10 total)"
+  ],
+  "skipped": []
+}

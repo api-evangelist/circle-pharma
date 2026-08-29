@@ -1,0 +1,186 @@
+openapi: 3.2.0
+info:
+  title: Circle Pharma Content API (WordPress REST API) Discovery API
+  version: wp/v2
+  description: Anonymously readable content API for circlepharma.com, derived from the WordPress REST API route index the site publishes at https://circlepharma.com/wp-json/. It exposes Circle Pharma press releases, publications, in-the-news items and pages (posts/pages), the media library, the leadership/board roster (team + member_type), the events calendar (all_events + event_type), and site search. Circle Pharma does not publish a developer program or a hand-authored specification; this document is a faithful derivation of the routes, parameters and defaults the site itself advertises, restricted to the read operations verified to return HTTP 200 without credentials. Write operations exist on the same routes but are authenticated administrative endpoints, not a public API offering, and are deliberately not modelled here.
+  contact:
+    name: Circle Pharma
+    email: info@circlepharma.com
+    url: https://circlepharma.com/contact-us
+  x-derived-from: https://circlepharma.com/wp-json/
+  x-derived-on: '2026-08-01'
+  x-api-evangelist-note: Derived by the API Evangelist enrichment pipeline from the provider-published WordPress REST route index; not authored or endorsed by Circle Pharma.
+servers:
+- url: https://circlepharma.com/wp-json
+  description: Production
+security:
+- {}
+tags:
+- name: Discovery
+  description: Route index, content types, taxonomies and statuses
+paths:
+  /:
+    get:
+      operationId: getRouteIndex
+      tags:
+      - Discovery
+      summary: Get the REST API route index
+      description: Returns the site name, description, namespaces, authentication schemes and every registered route.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Route index
+          content:
+            application/json:
+              schema:
+                type: object
+  /wp/v2:
+    get:
+      operationId: getCoreNamespaceIndex
+      tags:
+      - Discovery
+      summary: Get the wp/v2 namespace index
+      security:
+      - {}
+      responses:
+        '200':
+          description: Namespace index
+          content:
+            application/json:
+              schema:
+                type: object
+  /wp/v2/types:
+    get:
+      operationId: listTypes
+      tags:
+      - Discovery
+      summary: List registered content types
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+  /wp/v2/taxonomies:
+    get:
+      operationId: listTaxonomies
+      tags:
+      - Discovery
+      summary: List registered taxonomies
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Limit results to taxonomies associated with a specific post type.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+  /wp/v2/statuses:
+    get:
+      operationId: listStatuses
+      tags:
+      - Discovery
+      summary: List registered post statuses
+      parameters:
+      - name: context
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - view
+          - embed
+          - edit
+          default: view
+        description: Scope under which the request is made; determines fields present in response.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable WordPress error code.
+        message:
+          type: string
+          description: Human-readable error message.
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+              description: HTTP status code.
+            params:
+              type: object
+            details:
+              type: object
+  responses:
+    Error:
+      description: WordPress REST error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: rest_post_invalid_id
+            message: Invalid post ID.
+            data:
+              status: 404
+  securitySchemes:
+    applicationPassword:
+      type: http
+      scheme: basic
+      description: WordPress Application Passwords (RFC 7617 Basic over TLS). Required only for write and administrative routes, which are out of scope for this document — every operation modelled here is anonymous.
