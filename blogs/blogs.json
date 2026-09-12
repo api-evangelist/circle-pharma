@@ -2,20 +2,6 @@
   "repo": "circle-pharma",
   "feeds": [
     {
-      "source": "https://circlepharma.com/whats-new/feed/",
-      "feed_url": "https://circlepharma.com/whats-new/feed/",
-      "title": "",
-      "saved": 0,
-      "method": "feed"
-    },
-    {
-      "source": "https://circlepharma.com/about-us/feed/",
-      "feed_url": "https://circlepharma.com/about-us/feed/",
-      "title": "",
-      "saved": 0,
-      "method": "feed"
-    },
-    {
       "source": "https://circlepharma.com/about-us",
       "feed_url": "https://circlepharma.com/about-us/feed/",
       "title": "",
@@ -28,8 +14,22 @@
       "title": "",
       "saved": 0,
       "method": "discovered"
+    },
+    {
+      "source": "https://circlepharma.com/whats-new/feed/",
+      "feed_url": "https://circlepharma.com/whats-new/feed/",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://circlepharma.com/about-us/feed/",
+      "feed_url": "https://circlepharma.com/about-us/feed/",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
     }
   ],
   "post_count": 0,
-  "fetched": "2026-08-30T22:33:40Z"
+  "fetched": "2026-09-06T19:17:18Z"
 }
