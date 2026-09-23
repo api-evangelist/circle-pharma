@@ -1,7 +1,7 @@
 {
   "provider": "circle-pharma",
   "sources": [
-    "circle-pharma-content-openapi.yml"
+    "_ae-authored/circle-pharma-content-openapi.yml"
   ],
   "outputs": [
     "circle-pharma-categories-api-openapi.yml",
@@ -15,14 +15,24 @@
     "circle-pharma-tags-api-openapi.yml",
     "circle-pharma-team-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/circle-pharma-content-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "circle-pharma-content-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "apis.yml register: written (+10 apis, 10 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "circle-pharma-categories-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-comments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-discovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-events-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-media-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-pages-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-posts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-search-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-tags-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "circle-pharma-team-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

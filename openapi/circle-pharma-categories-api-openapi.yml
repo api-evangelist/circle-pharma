@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Circle Pharma Content API (WordPress REST API) Categories API
+  title: Circle Pharma Content API (WordPress REST API) Categories…
   version: wp/v2
-  description: Anonymously readable content API for circlepharma.com, derived from the WordPress REST API route index the site publishes at https://circlepharma.com/wp-json/. It exposes Circle Pharma press releases, publications, in-the-news items and pages (posts/pages), the media library, the leadership/board roster (team + member_type), the events calendar (all_events + event_type), and site search. Circle Pharma does not publish a developer program or a hand-authored specification; this document is a faithful derivation of the routes, parameters and defaults the site itself advertises, restricted to the read operations verified to return HTTP 200 without credentials. Write operations exist on the same routes but are authenticated administrative endpoints, not a public API offering, and are deliberately not modelled here.
+  description: Anonymously readable content API for circlepharma.com, derived from the WordPress REST API route index the site publishes at https://circlepharma.com/wp-json/.
   contact:
     name: Circle Pharma
     email: info@circlepharma.com
@@ -197,6 +197,18 @@ paths:
         '404':
           $ref: '#/components/responses/Error'
 components:
+  responses:
+    Error:
+      description: WordPress REST error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: rest_post_invalid_id
+            message: Invalid post ID.
+            data:
+              status: 404
   schemas:
     Category:
       type: object
@@ -242,18 +254,6 @@ components:
               type: object
             details:
               type: object
-  responses:
-    Error:
-      description: WordPress REST error envelope
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: rest_post_invalid_id
-            message: Invalid post ID.
-            data:
-              status: 404
   securitySchemes:
     applicationPassword:
       type: http
