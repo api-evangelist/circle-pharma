@@ -12,13 +12,6 @@
       "source": "https://circlepharma.com/feed/",
       "feed_url": "https://circlepharma.com/feed/",
       "title": "",
-      "saved": 1,
-      "method": "feed"
-    },
-    {
-      "source": "https://circlepharma.com/about-us/feed/",
-      "feed_url": "https://circlepharma.com/about-us/feed/",
-      "title": "",
       "saved": 0,
       "method": "feed"
     },
@@ -28,8 +21,15 @@
       "title": "",
       "saved": 0,
       "method": "feed"
+    },
+    {
+      "source": "https://circlepharma.com/about-us/feed/",
+      "feed_url": "https://circlepharma.com/about-us/feed/",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
     }
   ],
-  "post_count": 1,
-  "fetched": "2026-10-10T13:15:00Z"
+  "post_count": 10,
+  "fetched": "2026-10-17T14:53:57Z"
 }
