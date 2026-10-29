@@ -64,31 +64,100 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Circle Pharma is a clinical-stage biopharmaceutical company in South San Francisco, California,
-developing cell-permeable, orally bioavailable macrocycle therapies for cancer. Founded in 2013, the
-company applies its proprietary MXMO structure-based design platform to protein-protein interactions
-that conventional small molecules cannot reach. Its pipeline targets cyclins: lead program CID-078, a
-first-in-class oral cyclin A/B RxL inhibitor, is in Phase 1 for advanced solid tumors, followed by a
-preclinical cyclin D1 RxL inhibitor and undisclosed cyclin programs partnered with Boehringer
-Ingelheim.
+Circle Pharma is a clinical-stage biopharmaceutical company in South San Francisco, California, developing cell-permeable, orally bioavailable macrocycle therapies for cancer. Founded in 2013 by Matthew P. Jacobson and Scott Lokey out of work on predicting synthetic macrocycle cell permeability, the company applies its proprietary MXMO structure-based design platform to protein-protein interactions that conventional small molecules cannot reach. Its pipeline targets cyclins, the regulators of the cell cycle that drive many cancers: lead program CID-078, a first-in-class oral cyclin A/B RxL inhibitor, is in Phase 1 for advanced solid tumors, followed by a preclinical cyclin D1 RxL inhibitor and undisclosed cyclin programs partnered with Boehringer Ingelheim. Circle Pharma closed a $90M Series D led by The Column Group in 2024 and has an agreement with Eli Lilly to use Lilly TuneLab to strengthen the AI/ML side of the MXMO platform. Circle Pharma runs no developer program and publishes no product API; the only machine-readable surface it exposes is the anonymously readable WordPress REST content API behind circlepharma.com.
 
-- Website: https://circlepharma.com/
-- Contact: 169 Harbor Way, South San Francisco, CA 94080 — info@circlepharma.com
-- Secondary market listing: https://forgeglobal.com/circle-pharma_stock/
+**Areas:** Company · Biotechnology · Pharmaceuticals · Oncology · Drug Discovery · Macrocycles · Clinical Trials · Life Sciences · content-api
 
-## API surface
+## Circle Pharma on APIs.io
 
-Circle Pharma runs **no developer program** and markets **no API**. It publishes no OpenAPI, no
-GraphQL endpoint, no MCP server, no A2A agent card, no webhooks or events, no `llms.txt` and no
-`/.well-known/` documents — all probed on 2026-08-01 and recorded in
-[`well-known/circle-pharma-well-known.yml`](well-known/circle-pharma-well-known.yml).
+Everything profiled for Circle Pharma is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/circle-pharma/](https://apis.io/providers/circle-pharma/)** — or go straight to one of the APIs or properties below.
 
-The one machine-readable surface the company exposes is the **anonymously readable WordPress REST
-content API** behind circlepharma.com, published at `https://circlepharma.com/wp-json/` (349 routes
-across 18 namespaces). It serves press releases, publications and in-the-news items, site pages, the
-leadership/board roster, the events calendar and site search without credentials.
+### APIs (1)
 
-[`openapi/circle-pharma-content-openapi.yml`](openapi/circle-pharma-content-openapi.yml) is an
-OpenAPI 3.1 document **derived by API Evangelist** from that published route index and verified
-against live responses. It is not a Circle Pharma specification and the company does not support it
-as a product.
+- [Circle Pharma Website (WordPress REST)](https://apis.io/apis/circle-pharma/circlepharma-com-website-wordpress-rest/) — The public WordPress REST API (wp-json) of the Circle Pharma website at circlepharma.com: the route index of the site's content management system,…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [Circle Pharma Content API (WordPress REST API)](https://apis.io/collections/circle-pharma/open-circle-pharma-content/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Circle Pharma Content Overlay](https://apis.io/overlays/circle-pharma/circle-pharma-content-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Circle Pharma Authentication](https://apis.io/security/circle-pharma/circle-pharma-authentication/)
+- [Circle Pharma Domain Security](https://apis.io/security/circle-pharma/circle-pharma-domain-security/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://circlepharma.com/)
+- [Support](https://circlepharma.com/contact-us)
+- [Blog](https://circlepharma.com/whats-new)
+- [Terms of service](https://circlepharma.com/terms-of-use)
+- [Privacy policy](https://circlepharma.com/privacy-policy)
+
+## API Evangelist rating
+
+**Kin Score 18.9** — emerging · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 65.2 |
+| Contract quality | 1.7 |
+| Contract governance | 4.5 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 30.4 |
+| Access clarity | 21.1 |
+
+**Agent readiness 6.3** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 19.5** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/circle-pharma/](https://apis.io/providers/circle-pharma/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Circle Pharma: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/circle-pharma/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
